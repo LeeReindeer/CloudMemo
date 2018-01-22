@@ -1,6 +1,7 @@
 package xyz.leezoom.cloudmemo.addmemo
 
 import xyz.leezoom.cloudmemo.bean.Memo
+import xyz.leezoom.cloudmemo.bean.MemoL
 
 interface EditAddPresenter {
 
@@ -8,8 +9,7 @@ interface EditAddPresenter {
 
   fun save(memo: Memo)
 
-  // TODO: 21/01/18  update memo
-  fun update()
+  fun update(id: String, memoL: MemoL)
 
   fun loadMemo(memo: Memo)
 

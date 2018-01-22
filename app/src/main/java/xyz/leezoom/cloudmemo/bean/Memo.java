@@ -1,5 +1,7 @@
 package xyz.leezoom.cloudmemo.bean;
 
+import android.os.Parcel;
+
 import com.avos.avoscloud.AVClassName;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
@@ -10,9 +12,14 @@ public class Memo extends AVObject {
   //String description;
   //int words;
   //private MemoL memoL;
-
+  public static final Creator CREATOR = AVObjectCreator.instance;
 
   public Memo() {
+  }
+
+  //make Parcelable
+  public Memo(Parcel in) {
+    super(in);
   }
 
   public Memo(String title, String description, int words, AVUser user) {
@@ -58,6 +65,11 @@ public class Memo extends AVObject {
   public void setWords(int words) {
     put("words", words);
     //memoL.setWords(words);
+  }
+
+
+  public MemoL toLocal() {
+    return new MemoL(getString("title"), getString("description"), getInt("words"));
   }
 
   /*

@@ -2,8 +2,10 @@ package xyz.leezoom.cloudmemo.addmemo
 
 import android.content.Context
 import com.avos.avoscloud.AVException
+import com.avos.avoscloud.AVObject
 import com.avos.avoscloud.SaveCallback
 import xyz.leezoom.cloudmemo.bean.Memo
+import xyz.leezoom.cloudmemo.bean.MemoL
 
 class EditAddPresenterImpl(private val context: Context,
                            private val editAddView: EditAddView) : EditAddPresenter {
@@ -19,8 +21,13 @@ class EditAddPresenterImpl(private val context: Context,
     })
   }
 
-  override fun update() {
-    //TODO("not implemented")
+  override fun update(id: String, memoL: MemoL) {
+    //update by id
+    val memo = AVObject.createWithoutData(Memo::class.java, id)
+    memo.title = memoL.title
+    memo.description = memoL.description
+    memo.words = memoL.words
+    save(memo)
   }
 
   override fun loadMemo(memo: Memo) {
