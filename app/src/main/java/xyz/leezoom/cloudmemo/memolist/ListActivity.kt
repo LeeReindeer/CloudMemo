@@ -2,19 +2,23 @@ package xyz.leezoom.cloudmemo.memolist
 
 import android.app.Activity
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.AdapterView
 import android.widget.Toast
-import com.avos.avoscloud.*
+import com.avos.avoscloud.AVException
+import com.avos.avoscloud.AVObject
+import com.avos.avoscloud.AVUser
+import com.avos.avoscloud.SaveCallback
 import kotlinx.android.synthetic.main.activity_main.*
 import xyz.leezoom.cloudmemo.R
+import xyz.leezoom.cloudmemo.addmemo.EditAddActivity
 import xyz.leezoom.cloudmemo.bean.Memo
 import xyz.leezoom.cloudmemo.bean.MemoAdapter
-import xyz.leezoom.cloudmemo.addmemo.EditAddActivity
 import xyz.leezoom.cloudmemo.login.LoginActivity
 
 class ListActivity : AppCompatActivity(), ListView {
@@ -22,6 +26,7 @@ class ListActivity : AppCompatActivity(), ListView {
   private lateinit var memoAdapter: MemoAdapter
   private lateinit var memoList: ArrayList<Memo>
   private lateinit var presenter: ListPresenter
+  private val REFRESH_CODE = 1
 
   override fun onRefresh(status: Boolean, list: ArrayList<Memo>) {
     if (status) {
@@ -37,7 +42,12 @@ class ListActivity : AppCompatActivity(), ListView {
   }
 
   override fun onDelete(status: Boolean, pos: Int) {
-    //TODO("not implemented")
+    if (status) {
+      //not refresh from net
+      Toast.makeText(this, "deleted", Toast.LENGTH_SHORT).show()
+      memoList.removeAt(pos)
+      memoAdapter.notifyDataSetChanged()
+    }
   }
 
   //first time load
@@ -68,12 +78,27 @@ class ListActivity : AppCompatActivity(), ListView {
 
   private fun initView() {
     list_view.adapter = memoAdapter
+
+    list_view.setOnItemClickListener { parent, view, position, id ->
+      Log.d("Click", "$position")
+      Toast.makeText(this, "click $position, ${memoList[position].title}", Toast.LENGTH_SHORT).show()
+      val intent = Intent(this@ListActivity, EditAddActivity::class.java)
+      intent.putExtra("memo", memoList[position])
+      startActivityForResult(intent, REFRESH_CODE)
+    }
+    list_view.onItemLongClickListener = AdapterView.OnItemLongClickListener { parent, view, position, id ->
+      Toast.makeText(this, "delete $position, ${memoList[position].description}", Toast.LENGTH_SHORT).show()
+      presenter.deleteMemo(memoList[position].objectId, position)
+      true
+    }
+
     main_fb.setOnClickListener {
-      startActivityForResult(Intent(this@ListActivity, EditAddActivity::class.java), 1)
+      startActivityForResult(Intent(this@ListActivity, EditAddActivity::class.java), REFRESH_CODE)
     }
     refresh_layout.setOnRefreshListener {
       presenter.refresh()
     }
+
   }
 
   private fun initData() {
@@ -86,7 +111,7 @@ class ListActivity : AppCompatActivity(), ListView {
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
-    if (requestCode == 1) {
+    if (requestCode == REFRESH_CODE) {
       if (resultCode == Activity.RESULT_OK) {
         presenter.refresh()
       } else {
@@ -111,6 +136,7 @@ class ListActivity : AppCompatActivity(), ListView {
       }
 
       R.id.menu_about -> {
+        Toast.makeText(this, "CloudMemo is a Simple example for LeanCloud", Toast.LENGTH_SHORT).show()
         return true
       }
 

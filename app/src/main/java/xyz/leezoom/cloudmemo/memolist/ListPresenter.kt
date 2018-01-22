@@ -9,5 +9,5 @@ interface ListPresenter {
 
   fun addMemo()
 
-  fun deleteMemo(id: String)
+  fun deleteMemo(id: String, position: Int)
 }

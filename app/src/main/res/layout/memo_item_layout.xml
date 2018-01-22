@@ -33,7 +33,7 @@
             tools:text="21/01/2018" />
     </LinearLayout>
 
-    <ScrollView
+    <FrameLayout
         android:id="@+id/mm_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -45,6 +45,6 @@
             android:textColor="@color/secondaryText"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             tools:text="This is content.This is content.This is content.This is content." />
-    </ScrollView>
+    </FrameLayout>
 
 </LinearLayout>

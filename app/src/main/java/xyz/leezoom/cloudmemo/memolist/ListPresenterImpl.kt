@@ -44,8 +44,13 @@ class ListPresenterImpl (private val context: Context,
     })
   }
 
-  override fun deleteMemo(id: String) {
-    //TODO("not implemented")
+  override fun deleteMemo(id: String, position: Int) {
+    val memo = AVObject.createWithoutData(Memo::class.java, id)
+    memo.deleteInBackground(object : DeleteCallback() {
+      override fun done(e: AVException?) {
+        listView.onDelete(e == null, position)
+      }
+    })
   }
 
   override fun addMemo() {
