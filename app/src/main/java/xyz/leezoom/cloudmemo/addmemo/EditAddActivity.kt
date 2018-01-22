@@ -42,7 +42,7 @@ class EditAddActivity : AppCompatActivity(), EditAddView {
   }
 
   private fun checkLoad(): Memo? {
-    return intent.getParcelableExtra("memo") as Memo
+    return intent.getParcelableExtra("memo") as Memo?
   }
 
   private fun initData() {
