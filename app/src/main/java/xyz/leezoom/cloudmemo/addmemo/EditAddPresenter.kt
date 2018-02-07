@@ -9,7 +9,7 @@ interface EditAddPresenter {
 
   fun save(memo: Memo)
 
-  fun update(id: String, memoL: MemoL)
+  fun update(memo: Memo)
 
   fun loadMemo(memo: Memo)
 

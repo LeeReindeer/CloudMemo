@@ -3,9 +3,9 @@ package xyz.leezoom.cloudmemo.memolist
 interface ListPresenter {
   fun init()
 
-  fun refresh()
+  fun refresh(page: String)
 
-  fun loadAll()
+  fun loadAll(page: String)
 
   fun addMemo()
 

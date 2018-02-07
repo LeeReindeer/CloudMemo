@@ -1,16 +1,25 @@
 package xyz.leezoom.cloudmemo.login
 
 import android.content.Intent
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
+import androidx.content.edit
 import com.avos.avoscloud.AVUser
 import kotlinx.android.synthetic.main.activity_login.*
-import xyz.leezoom.cloudmemo.memolist.ListActivity
+import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.startActivity
+import xyz.leezoom.androidutilcode.ui.ABaseActivity
+import xyz.leezoom.cloudmemo.App
 import xyz.leezoom.cloudmemo.R
+import xyz.leezoom.cloudmemo.memolist.ListActivity
 
-class LoginActivity : AppCompatActivity(), LoginView {
+class LoginActivity : ABaseActivity(), LoginView {
+
+  override val layoutId: Int
+    get() = R.layout.activity_login
+
+  override val toolbarId: Int
+    get() = -1
 
   private var loginOrRegister = true
   private lateinit var loginPresenter: LoginPresenter
@@ -19,8 +28,13 @@ class LoginActivity : AppCompatActivity(), LoginView {
     showProgress(false)
     if (status) {
       this@LoginActivity.finish()
-      Toast.makeText(this@LoginActivity, "Login succeed", Toast.LENGTH_SHORT).show()
-      startActivity(Intent(this@LoginActivity, ListActivity::class.java))
+      App.setCurrentPage(user!!.objectId)
+      defaultSharedPreferences.edit {
+        putString("CurrentPage", user.objectId)
+        putStringSet("pages", setOf(user.objectId))
+      }
+      Toast.makeText(this@LoginActivity, "Hey ${user.username}", Toast.LENGTH_SHORT).show()
+      startActivity<ListActivity>()
     } else {
       Toast.makeText(this@LoginActivity, "Login failed", Toast.LENGTH_SHORT).show()
     }
@@ -29,7 +43,7 @@ class LoginActivity : AppCompatActivity(), LoginView {
   override fun onRegister(status: Boolean) {
     if (status) {
       Toast.makeText(this@LoginActivity, "Register succeed", Toast.LENGTH_SHORT).show()
-      email_edit.visibility = View.GONE
+      input_layout_email.visibility = View.GONE
       loginOrRegister = true
     } else {
       Toast.makeText(this@LoginActivity, "Register failed ", Toast.LENGTH_SHORT).show()
@@ -39,58 +53,65 @@ class LoginActivity : AppCompatActivity(), LoginView {
   override fun onError(status: Int) {
     when(status) {
       //格式错误
-      -1 -> email_edit.error = "Check your email or password"
+      -1 -> input_layout_email.error = "Check your email or password"
     }
   }
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_login)
-    initData()
-    initView()
+  override fun initData() {
+    loginPresenter = LoginPresenterImpl(this@LoginActivity, this)
     if (checkLogin()) {
       startActivity(Intent(this@LoginActivity, ListActivity::class.java))
       this.finish()
     }
   }
 
-  private fun initView() {
-    //do login/register
-    do_button.setOnClickListener {
-      showProgress(true)
-      val userName = username_edit.text.toString()
-      val pass = pass_edit.text.toString()
-      val email = email_edit.text.toString()
+  override fun initView() {
+    title = getText(R.string.app_name)
+    login_button.setOnClickListener {
       if (loginOrRegister) {
-        //login
-        loginPresenter.doLogin(userName, pass)
+        showProgress(true)
+        val userName = username_edit.text.toString()
+        val pass = pass_edit.text.toString()
+        if(userName.isNotEmpty() && pass.isNotEmpty()) {
+          loginPresenter.doLogin(userName, pass)
+        } else {
+          showProgress(false)
+          input_layout_username.error = "Username is requested"
+          input_layout_pass.error = "Password is requested"
+        }
       } else {
-        loginPresenter.doRegister(userName, pass, email)
+        input_layout_email.visibility = View.GONE
+        loginOrRegister = !loginOrRegister
       }
     }
 
-    switch_button.setOnClickListener {
+    register_button.setOnClickListener {
       if (loginOrRegister) {
         //to register
-        email_edit.visibility = View.VISIBLE
+        register_button.text = getString(R.string.register_hint)
+        input_layout_email.visibility = View.VISIBLE
       } else {
-        //back login
-        email_edit.visibility = View.GONE
+        //do register and login
+        showProgress(true)
+        val userName = username_edit.text.toString()
+        val pass = pass_edit.text.toString()
+        val email = email_edit.text.toString()
+        if (userName.isNotEmpty() && pass.isNotEmpty() && email.isNotEmpty()) {
+          loginPresenter.doRegister(userName, pass, email)
+        }
       }
       loginOrRegister = !loginOrRegister
     }
   }
 
-  private fun initData() {
-    loginPresenter = LoginPresenterImpl(this@LoginActivity, this)
-  }
+
 
   private fun showProgress(status: Boolean) {
     if (status) {
-      login_container.visibility = View.GONE
+      buttons_container.visibility = View.GONE
       progressbar.visibility = View.VISIBLE
     } else {
-      login_container.visibility = View.VISIBLE
+      buttons_container.visibility = View.VISIBLE
       progressbar.visibility = View.GONE
     }
   }

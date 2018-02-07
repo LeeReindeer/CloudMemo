@@ -1,3 +1,17 @@
 <resources>
-    <string name="app_name">CloudMemo</string>
+    <string name="app_name">Parallel Memo</string>
+
+
+    <string name="editor_hint">Hi stranger</string>
+    <string name="username_hint">Username</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_hint">Login</string>
+    <string name="register_hint">Register</string>
+    <string name="toast_no_premission">You have no reason to do this!</string>
+    <string name="toast_empty_content">Empty content, not saved!</string>
+    <string name="transition_content" translatable="false">transition_content</string>
+    <string name="transition_username" translatable="false">transition_username</string>
+    <string name="menu_item_lock" translatable="false">Lock</string>
+    <string name="menu_item_visible" translatable="false">Visible</string>
 </resources>

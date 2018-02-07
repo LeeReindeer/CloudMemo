@@ -33,6 +33,7 @@
             android:layout_marginLeft="@dimen/normal_margin"
             android:layout_marginStart="@dimen/normal_margin"
             android:layout_marginRight="@dimen/normal_margin"
+            android:transitionName="@string/transition_content"
             tools:text="This is content.This is content.This is content.This is content." />
     </LinearLayout>
 
@@ -52,7 +53,6 @@
             android:layout_marginRight="@dimen/half_margin"
             android:layout_marginEnd="@dimen/half_margin"
             android:layout_marginBottom="@dimen/half_margin"
-            android:scaleType="center"
             android:contentDescription="@null" />
 
         <ImageView
@@ -64,7 +64,6 @@
             android:layout_marginRight="@dimen/half_margin"
             android:layout_marginEnd="@dimen/half_margin"
             android:layout_marginBottom="@dimen/half_margin"
-            android:scaleType="center"
             android:contentDescription="@null" />
     </LinearLayout>
 

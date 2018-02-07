@@ -8,10 +8,13 @@ import com.avos.avoscloud.AVUser;
 
 @AVClassName("Memo")
 public class Memo extends AVObject {
-  //String title;
   //String description;
-  //int words;
   //private MemoL memoL;
+  //String pageName;
+  //boolean locked;
+  //boolean privated;
+  //AVUser user
+
   public static final Creator CREATOR = AVObjectCreator.instance;
 
   public Memo() {
@@ -22,10 +25,11 @@ public class Memo extends AVObject {
     super(in);
   }
 
-  public Memo(String title, String description, int words, AVUser user) {
-    put("title", title);
+  public Memo(String description, String pageName, boolean locked, boolean visibility, AVUser user) {
     put("description", description);
-    put("words", words);
+    put("page", pageName);
+    put("locked", locked);
+    put("visibility", visibility);
     put("user", user);
     //memoL.setTitle(title);
     //memoL.setDescription(description);
@@ -40,15 +44,6 @@ public class Memo extends AVObject {
     put("user", user);
   }
 
-  public String getTitle() {
-    return getString("title");
-  }
-
-  public void setTitle(String title) {
-    put("title", title);
-    //memoL.setTitle(title);
-  }
-
   public String getDescription() {
     return getString("description");
   }
@@ -58,15 +53,32 @@ public class Memo extends AVObject {
     //memoL.setDescription(description);
   }
 
-  public int getWords() {
-    return getInt("words");
+  //TODO 可以浏览其他的公共 page， 默认 pageName 为 user 的 objectId
+  public String getPage() {
+    return getString("page");
   }
 
-  public void setWords(int words) {
-    put("words", words);
-    //memoL.setWords(words);
+  public void setPage(String pageName) {
+    put("page", pageName);
   }
 
+  //TODO 锁住这个 memo，其他人在这个 page 可见但不可编辑
+  public boolean isLocked() {
+    return getBoolean("locked");
+  }
+
+  public void setLocked(boolean locked) {
+    put("locked", locked);
+  }
+
+  //TODO 隐私的 memo，其他人不可见
+  public boolean getVisibility() {
+    return getBoolean("visibility");
+  }
+
+  public void setVisibility(boolean visibility) {
+    put("visibility", visibility);
+  }
 
   public MemoL toLocal() {
     return new MemoL(getString("title"), getString("description"), getInt("words"));

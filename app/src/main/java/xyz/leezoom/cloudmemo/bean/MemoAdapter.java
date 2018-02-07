@@ -2,65 +2,101 @@ package xyz.leezoom.cloudmemo.bean;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mikepenz.community_material_typeface_library.CommunityMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import xyz.leezoom.androidutilcode.adapter.ListViewAdapter;
 import xyz.leezoom.cloudmemo.R;
 
-public class MemoAdapter extends ArrayAdapter<Memo> {
+public class MemoAdapter extends ListViewAdapter<Memo, MemoAdapter.ViewHolder> {
 
-  private int resourceId;
   private Context context;
 
-  public MemoAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Memo> memos) {
-    super(context, resource, memos);
+  public MemoAdapter(@NotNull Context context, @NotNull ArrayList<Memo> list) {
+    super(context, list);
     this.context = context;
-    this.resourceId = resource;
   }
 
 
-  @NonNull
   @Override
-  public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-    Memo memo = getItem(position);
-    ViewHolder viewHolder;
-    if (convertView == null) {
-      convertView = LayoutInflater.from(context).inflate(resourceId, parent,false);
-      viewHolder = new ViewHolder();
-      viewHolder.timeText = (TextView)convertView.findViewById(R.id.mm_time);
-      viewHolder.titleText = (TextView)convertView.findViewById(R.id.mm_title);
-      viewHolder.contentText = (TextView)convertView.findViewById(R.id.mm_content);
-      convertView.setTag(viewHolder);
+  protected int getLayoutId() {
+    return R.layout.memo_item_layout;
+  }
+
+  @NotNull
+  @Override
+  protected ViewHolder getViewHolder() {
+    return new ViewHolder();
+  }
+
+  @Override
+  protected void bindView(@NotNull ViewHolder holder, @org.jetbrains.annotations.Nullable View view) {
+    assert view != null;
+    holder.contentText = view.findViewById(R.id.mm_content);
+    holder.timeText = view.findViewById(R.id.mm_time);
+    holder.lockImage = view.findViewById(R.id.lock_image);
+    holder.visibilityImage = view.findViewById(R.id.visibility_image);
+  }
+
+  @Override
+  protected void bindData(@NotNull ViewHolder holder, Memo aMemo, int position) {
+    if (aMemo.getDescription().length() <= 15) {
+      holder.contentText.setText(aMemo.getDescription());
     } else {
-      viewHolder = (ViewHolder) convertView.getTag();
+      holder.contentText.setText(String.format("%s...", aMemo.getDescription().substring(0, 15)));
     }
 
-    viewHolder.titleText.setText(memo.getTitle());
-    viewHolder.contentText.setText(memo.getDescription());
-    //SimpleDateFormat ft = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.CHINA);
-    viewHolder.timeText.setText(memo.getCreatedAt().toString());
-    return convertView;
-    //return super.getView(position, convertView, parent);
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+    holder.timeText.setText(dateFormat.format(aMemo.getCreatedAt()));
+    if (aMemo.isLocked()) {
+      holder.lockImage.setImageDrawable(new IconicsDrawable(context)
+              .icon(CommunityMaterial.Icon.cmd_lock_outline)
+              .color(ContextCompat.getColor(context, R.color.colorPrimary))
+              .sizeDp(24));
+    } else {
+      holder.lockImage.setImageDrawable(new IconicsDrawable(context)
+              .icon(CommunityMaterial.Icon.cmd_lock_open)
+              .color(ContextCompat.getColor(context, R.color.colorPrimary))
+              .sizeDp(24));
+    }
+    if (aMemo.getVisibility()) {
+      holder.visibilityImage.setImageDrawable(new IconicsDrawable(context)
+              .icon(CommunityMaterial.Icon.cmd_eye)
+              .color(ContextCompat.getColor(context, R.color.colorPrimary))
+              .sizeDp(24));
+    } else {
+      holder.visibilityImage.setImageDrawable(new IconicsDrawable(context)
+              .icon(CommunityMaterial.Icon.cmd_eye_off)
+              .color(ContextCompat.getColor(context, R.color.colorPrimary))
+              .sizeDp(24));
+    }
+    //TODO switch status in list
+    /*
+    holder.lockImage.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+
+      }
+    });*/
   }
 
-  @Override
-  public int getCount() {
-    return super.getCount();
-  }
-
-  class ViewHolder {
-    TextView titleText;
+  class ViewHolder extends ListViewAdapter.ListViewHolder {
     TextView contentText;
     TextView timeText;
+    ImageView lockImage;
+    ImageView visibilityImage;
   }
 }

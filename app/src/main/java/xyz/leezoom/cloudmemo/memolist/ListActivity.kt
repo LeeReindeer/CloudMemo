@@ -2,26 +2,44 @@ package xyz.leezoom.cloudmemo.memolist
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.graphics.Color
+import android.os.Build
+import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.util.Pair
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.AdapterView
+import android.view.View
+import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
-import com.avos.avoscloud.AVException
-import com.avos.avoscloud.AVObject
+import androidx.content.edit
 import com.avos.avoscloud.AVUser
-import com.avos.avoscloud.SaveCallback
+import com.mikepenz.community_material_typeface_library.CommunityMaterial
+import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.*
+import xyz.leezoom.androidcode.adapter.KTTextAdapter
+import xyz.leezoom.androidutilcode.ui.ABaseActivity
+import xyz.leezoom.androidutilcode.util.toast
+import xyz.leezoom.cloudmemo.AboutActivity
+import xyz.leezoom.cloudmemo.App
 import xyz.leezoom.cloudmemo.R
 import xyz.leezoom.cloudmemo.addmemo.EditAddActivity
 import xyz.leezoom.cloudmemo.bean.Memo
 import xyz.leezoom.cloudmemo.bean.MemoAdapter
 import xyz.leezoom.cloudmemo.login.LoginActivity
 
-class ListActivity : AppCompatActivity(), ListView {
+class ListActivity : ABaseActivity(), ListView {
+
+  private val TAG = "ListActivity"
+
+  override val layoutId: Int
+    get() = R.layout.activity_main
+
+  override val toolbarId: Int
+    get() = R.id.tool_bar
 
   private lateinit var memoAdapter: MemoAdapter
   private lateinit var memoList: ArrayList<Memo>
@@ -34,12 +52,11 @@ class ListActivity : AppCompatActivity(), ListView {
       memoList.addAll(list)
       memoAdapter.notifyDataSetChanged()
     }
+    setToolbarTitle()
     refresh_layout.isRefreshing = false
   }
 
-  override fun onAdd() {
-    //TODO("not implemented")
-  }
+  override fun onAdd() {}
 
   override fun onDelete(status: Boolean, pos: Int) {
     if (status) {
@@ -57,68 +74,113 @@ class ListActivity : AppCompatActivity(), ListView {
       memoAdapter.notifyDataSetChanged()
     }
     refresh_layout.isRefreshing = false
+    setToolbarTitle()
   }
 
-  override fun onError(msg: String?) {
+  override fun onError(message: String?) {
     refresh_layout.isRefreshing = false
-    if (!TextUtils.isEmpty(msg)) {
-      Toast.makeText(this, "refresh error, $msg", Toast.LENGTH_SHORT).show()
+    if (!message.isNullOrBlank()) {
+      Toast.makeText(this, "refresh error, $message", Toast.LENGTH_SHORT).show()
     }
   }
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
+  override fun initData() {
+    presenter = ListPresenterImpl(this, this)
+    memoList = ArrayList()
+    memoAdapter = MemoAdapter(this, memoList)
+    refresh_layout.isRefreshing = true
+    App.setCurrentPage(defaultSharedPreferences.getString("CurrentPage", AVUser.getCurrentUser().username))
+    Log.d(TAG, "Init Current page: ${App.getCurrentPage()}")
+    presenter.loadAll(App.getCurrentPage())
 
-    initData()
-    initView()
-    //testCloud()
   }
 
+  private fun showPages() {
+      val pageList = defaultSharedPreferences.getStringSet("pages", emptySet()).toCollection(ArrayList())
+      Log.d(TAG, "pageList: $pageList")
+      alert {
+        title = "Pages"
+        customView {
+          listView {
+            this.layoutParams = ViewGroup.LayoutParams(this.measuredWidth, this.measuredHeight).apply {
+              setPadding(16, 8, 16, 16)
+            }
+            adapter = KTTextAdapter(this@ListActivity, pageList)
+            (adapter as KTTextAdapter).notifyDataSetChanged()
 
-  private fun initView() {
+            setOnItemClickListener { parent, view, position, id ->
+              defaultSharedPreferences.edit {
+                if (pageList[position] != App.getCurrentPage()) {
+                  App.setCurrentPage(pageList[position])
+                  putString("CurrentPage", pageList[position])
+                  presenter.refresh(pageList[position])
+                }
+              }
+            }
+          }
+        }
+      }.show()
+  }
+
+  private fun setToolbarTitle() {
+    toolbar!!.title = if (App.getCurrentPage() != AVUser.getCurrentUser().objectId) {
+      App.getCurrentPage()
+    } else {
+      AVUser.getCurrentUser().username
+    }
+  }
+
+  override fun initView() {
+    setToolbarTitle()
+    toolbar!!.setOnClickListener {
+      showPages()
+    }
+
     list_view.adapter = memoAdapter
-
     list_view.setOnItemClickListener { parent, view, position, id ->
       Log.d("Click", "$position")
-      Toast.makeText(this, "click $position, ${memoList[position].title}", Toast.LENGTH_SHORT).show()
       val intent = Intent(this@ListActivity, EditAddActivity::class.java)
       intent.putExtra("memo", memoList[position])
-      startActivityForResult(intent, REFRESH_CODE)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        val pair = Pair<View, String>(view.findViewById(R.id.mm_content), getString(R.string.transition_content))
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, pair)
+        startActivityForResult(intent, REFRESH_CODE, options.toBundle())
+      } else {
+        startActivityForResult(intent, REFRESH_CODE)
+      }
     }
+
+    /*
     list_view.onItemLongClickListener = AdapterView.OnItemLongClickListener { parent, view, position, id ->
+
       Toast.makeText(this, "delete $position, ${memoList[position].description}", Toast.LENGTH_SHORT).show()
       presenter.deleteMemo(memoList[position].objectId, position)
       true
-    }
-
+    }*/
+    main_fb.setImageDrawable(IconicsDrawable(this)
+            .icon(CommunityMaterial.Icon.cmd_plus_one)
+            .color(Color.WHITE)
+            .sizeDp(24))
     main_fb.setOnClickListener {
       startActivityForResult(Intent(this@ListActivity, EditAddActivity::class.java), REFRESH_CODE)
     }
     refresh_layout.setOnRefreshListener {
-      presenter.refresh()
+      Log.d(TAG, "currentPage: ${App.getCurrentPage()}")
+      presenter.refresh(App.getCurrentPage())
     }
 
-  }
-
-  private fun initData() {
-    presenter = ListPresenterImpl(this, this)
-    memoList = ArrayList()
-    memoAdapter = MemoAdapter(this, R.layout.memo_item_layout, memoList)
-    refresh_layout.isRefreshing = true
-    presenter.loadAll()
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-    if (requestCode == REFRESH_CODE) {
-      if (resultCode == Activity.RESULT_OK) {
-        presenter.refresh()
-      } else {
-
+    when (requestCode) {
+      REFRESH_CODE -> {
+        if (resultCode == Activity.RESULT_OK) {
+          Log.d(TAG, "onActivityResult: REFRESH")
+          presenter.refresh(App.getCurrentPage())
+        }
       }
+      else -> toast("Canceled")
     }
-
   }
 
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -130,13 +192,46 @@ class ListActivity : AppCompatActivity(), ListView {
     when(item!!.itemId) {
       R.id.menu_out -> {
         AVUser.logOut()
+        defaultSharedPreferences.edit {
+          putString("CurrentPage", "")
+          putStringSet("page", emptySet())
+        }
         startActivity(Intent(this, LoginActivity::class.java))
         this.finish()
         return true
       }
 
       R.id.menu_about -> {
-        Toast.makeText(this, "CloudMemo is a Simple example for LeanCloud", Toast.LENGTH_SHORT).show()
+        startActivity<AboutActivity>()
+        return true
+      }
+
+      R.id.menu_page -> {
+        alert ("Add a page"){
+          var page = ""
+          val pageSet = defaultSharedPreferences.getStringSet("pages", emptySet())
+          var editView: EditText? = null
+
+          customView {
+            editView = editText()
+          }
+
+          yesButton {
+            page = editView!!.text.toString()
+            Log.d(TAG, "page: $page")
+            if (page.isNotBlank() && editView != null) {
+              defaultSharedPreferences.edit {
+                pageSet.add(page)
+                Log.d(TAG, "add page: $pageSet")
+                putStringSet("pages", pageSet)
+                putString("CurrentPage", page)
+              }
+              App.setCurrentPage(page)
+              presenter.refresh(page)
+            }
+          }
+          cancelButton {  }
+        }.show()
         return true
       }
 
@@ -144,18 +239,4 @@ class ListActivity : AppCompatActivity(), ListView {
     }
   }
 
-  @Deprecated("test")
-  private fun testCloud() {
-    val testClass = AVObject("TestObject")
-    testClass.put("words", "Hello world again again!")
-    testClass.saveInBackground(object : SaveCallback() {
-      override fun done(e: AVException?) {
-        if (e == null) {
-          Toast.makeText(this@ListActivity, "succeed", Toast.LENGTH_SHORT).show()
-          Log.d("Saved", "succeed!")
-          Log.d("id", testClass.objectId)
-        }
-      }
-    })
-  }
 }

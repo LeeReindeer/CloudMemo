@@ -21,13 +21,13 @@ class EditAddPresenterImpl(private val context: Context,
     })
   }
 
-  override fun update(id: String, memoL: MemoL) {
+  override fun update(memo: Memo) {
     //update by id
-    val memo = AVObject.createWithoutData(Memo::class.java, id)
-    memo.title = memoL.title
-    memo.description = memoL.description
-    memo.words = memoL.words
-    save(memo)
+    val aMemo = AVObject.createWithoutData(Memo::class.java, memo.objectId)
+    aMemo.description = memo.description
+    aMemo.isLocked = memo.isLocked
+    aMemo.visibility = memo.visibility
+    save(aMemo)
   }
 
   override fun loadMemo(memo: Memo) {
