@@ -1,9 +1,9 @@
 package xyz.leezoom.cloudmemo.memolist
 
 import android.content.Context
-import android.util.Log
 import com.avos.avoscloud.*
 import xyz.leezoom.cloudmemo.bean.Memo
+import xyz.leezoom.androidutilcode.util.LogUtil
 
 class ListPresenterImpl (private val context: Context,
                          private val listView: ListView) : ListPresenter {
@@ -19,12 +19,14 @@ class ListPresenterImpl (private val context: Context,
     query1.cachePolicy = AVQuery.CachePolicy.NETWORK_ELSE_CACHE
     query.maxCacheAge = 3600 * 1000 * 24 * 2
     query1.maxCacheAge = 3600 * 1000 * 24 * 2
+    query.orderByDescending("createdAt")
+    query1.orderByDescending("createdAt")
 
     if (page == AVUser.getCurrentUser().objectId) {
       query.whereEqualTo("user", AVUser.getCurrentUser()).whereEqualTo("page", AVUser.getCurrentUser().objectId)
       query.findInBackground(object : FindCallback<Memo>() {
         override fun done(list: List<Memo>?, e: AVException?) {
-          Log.d(TAG, "Single Query: refresh")
+          LogUtil.d(TAG, "Single Query: refresh")
           if (e == null && list != null) {
             val aList :ArrayList<Memo> = ArrayList()
             aList.addAll(list)
@@ -39,9 +41,11 @@ class ListPresenterImpl (private val context: Context,
       query.whereEqualTo("page", page).whereEqualTo("visibility", true)
       query1.whereEqualTo("page", page).whereEqualTo("user", AVUser.getCurrentUser())
       val orQuery = AVQuery.or(listOf(query, query1))
+      orQuery.maxCacheAge = 3600 * 1000 * 24 * 2
+      orQuery.orderByDescending("createdAt")
       orQuery.findInBackground(object : FindCallback<Memo>(){
         override fun done(list: List<Memo>?, e: AVException?) {
-          Log.d(TAG, "Or Query: refresh")
+          LogUtil.d(TAG, "Or Query: refresh")
           if (e == null && list != null) {
             val aList :ArrayList<Memo> = ArrayList()
             aList.addAll(list)
@@ -63,11 +67,14 @@ class ListPresenterImpl (private val context: Context,
     query1.cachePolicy = AVQuery.CachePolicy.NETWORK_ELSE_CACHE
     query.maxCacheAge = 3600 * 1000 * 24 * 2
     query1.maxCacheAge = 3600 * 1000 * 24 * 2
+    query.orderByDescending("createdAt")
+    query1.orderByDescending("createdAt")
+
     if (page == AVUser.getCurrentUser().objectId) {
       query.whereEqualTo("user", AVUser.getCurrentUser()).whereEqualTo("page", AVUser.getCurrentUser().objectId)
       query.findInBackground(object : FindCallback<Memo>() {
         override fun done(list: List<Memo>?, e: AVException?) {
-          Log.d(TAG, "Single Query: load")
+          LogUtil.d(TAG, "Single Query: load")
           if (e == null && list != null) {
             val aList :ArrayList<Memo> = ArrayList()
             aList.addAll(list)
@@ -82,9 +89,11 @@ class ListPresenterImpl (private val context: Context,
       query.whereEqualTo("page", page).whereEqualTo("visibility", true)
       query1.whereEqualTo("page", page).whereEqualTo("user", AVUser.getCurrentUser())
       val orQuery = AVQuery.or(listOf(query, query1))
+      orQuery.maxCacheAge = 3600 * 1000 * 24 * 2
+      orQuery.orderByDescending("createdAt")
       orQuery.findInBackground(object : FindCallback<Memo>(){
         override fun done(list: List<Memo>?, e: AVException?) {
-          Log.d(TAG, "Or Query: load")
+          LogUtil.d(TAG, "Or Query: load")
           if (e == null && list != null) {
             val aList :ArrayList<Memo> = ArrayList()
             aList.addAll(list)
