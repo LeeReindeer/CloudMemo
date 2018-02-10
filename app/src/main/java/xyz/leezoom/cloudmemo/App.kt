@@ -1,14 +1,10 @@
 package xyz.leezoom.cloudmemo
 
 import android.app.Application
-import android.util.Log
-
+import cat.ereza.customactivityoncrash.config.CaocConfig
 import com.avos.avoscloud.AVAnalytics
 import com.avos.avoscloud.AVOSCloud
 import com.avos.avoscloud.AVObject
-
-import cat.ereza.customactivityoncrash.config.CaocConfig
-import com.avos.avoscloud.AVUser
 import xyz.leezoom.androidutilcode.util.LogUtil
 import xyz.leezoom.cloudmemo.bean.Memo
 import xyz.leezoom.cloudmemo.memolist.ListActivity
@@ -41,7 +37,7 @@ class App : Application() {
   }
 
   companion object {
-    var currentPage: String = if (AVUser.getCurrentUser() != null) AVUser.getCurrentUser().objectId else ""
+    var currentPage: String = "酷安"
     val CURRENT_PAGE = "CurrentPage"
     val PAGES = "pages"
   }
