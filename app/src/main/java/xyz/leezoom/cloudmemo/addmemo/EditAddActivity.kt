@@ -2,7 +2,6 @@ package xyz.leezoom.cloudmemo.addmemo
 
 import android.app.Activity
 import android.graphics.Color
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -13,6 +12,7 @@ import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.activity_edit_add.*
 import org.jetbrains.anko.defaultSharedPreferences
 import xyz.leezoom.androidutilcode.ui.ABaseActivity
+import xyz.leezoom.androidutilcode.util.LogUtil
 import xyz.leezoom.androidutilcode.util.toast
 import xyz.leezoom.cloudmemo.App
 import xyz.leezoom.cloudmemo.R
@@ -56,7 +56,7 @@ class EditAddActivity : ABaseActivity(), EditAddView {
   }
 
   override fun initData() {
-    Log.d(TAG, "initData")
+    LogUtil.d(TAG, "initData")
     presenter = EditAddPresenterImpl(this, this)
     memo = checkLoad()
     if (memo != null) {
@@ -74,7 +74,7 @@ class EditAddActivity : ABaseActivity(), EditAddView {
             .sizeDp(24))
 
     ad_fb.setOnClickListener {
-      Log.d(TAG, "click: ")
+      LogUtil.d(TAG, "click: ")
       doSaveOrUp()
     }
 
@@ -91,15 +91,15 @@ class EditAddActivity : ABaseActivity(), EditAddView {
   private fun doSaveOrUp() {
     val content = ad_content_edit.text.toString()
     val memo: Memo?
-    memo = if (App.getCurrentPage() == AVUser.getCurrentUser().objectId) {
+    memo = if (App.currentPage == AVUser.getCurrentUser().objectId) {
       Memo(content, AVUser.getCurrentUser().objectId, lockStatus, visibility, AVUser.getCurrentUser())
     } else {
-      Memo(content, App.getCurrentPage(), lockStatus, visibility, AVUser.getCurrentUser())
+      Memo(content, App.currentPage, lockStatus, visibility, AVUser.getCurrentUser())
     }
-    Log.d(TAG, "Try save: ")
+    LogUtil.d(TAG, "Try save: ")
     if (content.isNotBlank()) {
       if (this.memo == null) {
-        Log.d("Save", memo.description)
+        LogUtil.d("Save", memo.description)
         presenter.save(memo)
       } else {
         if (this.memo!!.description != content
@@ -109,10 +109,10 @@ class EditAddActivity : ABaseActivity(), EditAddView {
           this.memo!!.isLocked = lockStatus
           this.memo!!.visibility = visibility
 
-          Log.w("Update", "${memo.visibility}")
+          LogUtil.w("Update", "${memo.visibility}")
           presenter.update(this.memo!!)
         } else {
-          Log.d(TAG, "Nothing changed")
+          LogUtil.d(TAG, "Nothing changed")
         }
       }
     } else {
@@ -126,7 +126,7 @@ class EditAddActivity : ABaseActivity(), EditAddView {
   }
 
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-    Log.d(TAG, "onCreateOptionsMenu")
+    LogUtil.d(TAG, "onCreateOptionsMenu")
     menuInflater.inflate(R.menu.editor_menu, menu)
     switchIcon(menu!!.getItem(0))
     switchIcon(menu.getItem(1))
@@ -175,12 +175,12 @@ class EditAddActivity : ABaseActivity(), EditAddView {
       R.id.menu_editor_lock -> {
         if (memo != null) {
           if (memo!!.user.objectId != AVUser.getCurrentUser().objectId) {
-            toast(R.string.toast_no_premission)
+            toast(R.string.toast_no_permission)
             return false
           }
         }
         lockStatus = !lockStatus
-        Log.d(TAG, "lockStatus: $lockStatus")
+        LogUtil.d(TAG, "lockStatus: $lockStatus")
         if (lockStatus) {
           ad_content_edit.isFocusable = false
           ad_content_edit.isFocusableInTouchMode = false
@@ -195,12 +195,12 @@ class EditAddActivity : ABaseActivity(), EditAddView {
       R.id.menu_editor_visibility -> {
         if (memo != null) {
           if (memo!!.user.objectId != AVUser.getCurrentUser().objectId) {
-            toast(R.string.toast_no_premission)
+            toast(R.string.toast_no_permission)
             return false
           }
         }
         visibility = !visibility
-        Log.d(TAG, "visibility: $visibility")
+        LogUtil.d(TAG, "visibility: $visibility")
         switchIcon(item)
         return true
       }

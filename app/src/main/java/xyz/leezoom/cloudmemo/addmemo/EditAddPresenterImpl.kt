@@ -5,7 +5,6 @@ import com.avos.avoscloud.AVException
 import com.avos.avoscloud.AVObject
 import com.avos.avoscloud.SaveCallback
 import xyz.leezoom.cloudmemo.bean.Memo
-import xyz.leezoom.cloudmemo.bean.MemoL
 
 class EditAddPresenterImpl(private val context: Context,
                            private val editAddView: EditAddView) : EditAddPresenter {

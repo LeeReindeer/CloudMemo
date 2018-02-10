@@ -4,13 +4,14 @@
     package="xyz.leezoom.cloudmemo">
 
     <!-- 基础模块（必须加入以下声明）START -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!--<uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
     <!-- 基础模块 END -->
+    <uses-permission android:name="android.permission.READ_LOGS" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -19,14 +20,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar"
+        android:theme="@style/AppTheme.NoActionBarWhiteBack"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".memolist.ListActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".login.LoginActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,8 +32,11 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".login.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBarWhiteBack"></activity>
+        <activity
             android:name=".addmemo.EditAddActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBarWhiteBack" />
         <activity android:name=".AboutActivity"
             android:theme="@style/AppTheme.DarkActionBar"/>
     </application>

@@ -35,13 +35,13 @@ abstract class ABaseFragment : Fragment() {
 
   abstract fun initData(view: View?)
 
-  override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     val view = inflater!!.inflate(layoutId, container, false)
     initData(view)
     return view
   }
 
-  override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     initView(view, savedInstanceState)
   }
 }

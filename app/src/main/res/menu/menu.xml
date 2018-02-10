@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_page"
-        android:title="Add page">
+        android:id="@+id/menu_world"
+        android:title="@string/menu_add_world">
 
     </item>
 
     <item
         android:id="@+id/menu_out"
-        android:title="Logout">
+        android:title="@string/menu_logout">
     </item>
 
     <item
         android:id="@+id/menu_about"
-        android:title="About" />
+        android:title="@string/menu_about" />
 
 </menu>

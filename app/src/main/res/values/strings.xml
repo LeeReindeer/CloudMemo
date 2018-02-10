@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Parallel Memo</string>
 
+    <string name="transition_content" translatable="false">transition_content</string>
+    <string name="transition_username" translatable="false">transition_username</string>
 
     <string name="editor_hint">Hi stranger</string>
     <string name="username_hint">Username</string>
@@ -8,10 +10,49 @@
     <string name="password_hint">Password</string>
     <string name="login_hint">Login</string>
     <string name="register_hint">Register</string>
-    <string name="toast_no_premission">You have no reason to do this!</string>
+
+    <string name="toast_no_permission">You have no reason to do this!</string>
     <string name="toast_empty_content">Empty content, not saved!</string>
-    <string name="transition_content" translatable="false">transition_content</string>
-    <string name="transition_username" translatable="false">transition_username</string>
+    <string name="toast_register_success">Register succeed!Login…</string>
+
     <string name="menu_item_lock" translatable="false">Lock</string>
     <string name="menu_item_visible" translatable="false">Visible</string>
+    <string name="menu_add_world">Add world</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_about">About</string>
+
+
+    <string name="string_format1">%s (your hidden world)</string>
+
+    <!--error start-->
+    <string name="pass_not_valid_error">Password must between 8 ~ 18 chars</string>
+    <string name="account_not_valid_error">Username must between 3 ~ 18 chars></string>
+    <string name="email_not_valid_error">Email address is not valid</string>
+
+    <string name="username_empty_error">Username is empty</string>
+    <string name="pass_empty_error">Password is empty</string>
+    <string name="email_empty_error">Email is empty</string>
+
+    <string name="username_taken_error">Username has been taken</string>
+    <string name="email_taken_error">Email has been taken</string>
+
+    <string name="account_not_exit_error">Account is not exit</string>
+    <string name="account_pass_not_match">Username and password not match</string>
+    <string name="toast_permisson_denied" translatable="false">Wow</string>
+    <string name="toast_login_first">Please login first!</string>
+    <string name="alert_add_world">Add a world</string>
+    <string name="hint_try_input">Try input 酷安小黑屋</string>
+    <string name="alert_select_world">Worlds</string>
+    <string name="about_title">About</string>
+    <string name="about_version">Version</string>
+    <string name="about_license">License</string>
+    <string name="about_author">Author</string>
+    <string name="about_github">View on GitHub</string>
+    <string name="about_contact">Convenience</string>
+    <string name="about_telegram">Find me on Telegram</string>
+    <string name="about_rate">Rate this app</string>
+    <string name="about_shar">Share to</string>
+    <string name="about_hwo_to">How to use</string>
+
+    <!--error end-->
 </resources>

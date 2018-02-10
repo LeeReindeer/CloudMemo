@@ -9,43 +9,69 @@ import com.avos.avoscloud.SignUpCallback
 class LoginPresenterImpl (private var context: Context,
                           private var loginView: LoginView): LoginPresenter {
 
-  override fun init() {
-    //loginView =
-  }
+  override fun init() {}
 
   override fun doLogin(userName: String, pass: String) {
+
+    var loginStatus = 2
+
     if (userName.isNotEmpty() && pass.isNotEmpty()) {
       AVUser.logInInBackground(userName, pass, object : LogInCallback<AVUser>() {
         override fun done(user: AVUser?, e: AVException?) {
-          var loginStatus = true
           if (e != null || user == null) {
-            loginStatus = false
+            loginStatus = e!!.code
           }
           loginView.onLogin(user, loginStatus)
         }
       })
-    } else {
-      loginView.onError(-1)
+    } else if (userName.isEmpty()) {
+      loginView.onLogin(null, 200)
+    } else if (pass.isEmpty()) {
+      loginView.onLogin(null, 201)
     }
   }
 
   override fun doRegister(userName: String, pass: String, email: String) {
-    var user = AVUser()
+    var registerStatus = 2
+    val user = AVUser()
     user.username = userName
     user.setPassword(pass)
     user.email = email
-    if (userName.isNotEmpty() && pass.length >= 8 && email.contains("@")) {
-      user.signUpInBackground(object : SignUpCallback() {
-        override fun done(e: AVException?) {
-          var registerStatus = true
-          if (e != null) {
-            registerStatus = false
-          }
-          loginView.onRegister(registerStatus)
+    if (userName.isNotEmpty() && pass.isNotEmpty() && email.isNotEmpty()) {
+      when {
+        userName.length !in 3..18 -> {
+          loginView.onRegister(2000)
+          return
         }
-      })
-    } else {
-      loginView.onError(-1)
+
+        pass.length !in 8..18 -> {
+          loginView.onRegister(2011)
+          return
+        }
+
+        !email.contains("@") -> {
+          loginView.onRegister(2044)
+          return
+        }
+
+        else -> {
+          user.signUpInBackground(object : SignUpCallback() {
+            override fun done(e: AVException?) {
+              if (e != null) {
+                registerStatus = e.code
+              }
+              loginView.onRegister(registerStatus)
+            }
+          })
+        }
+
+      }
+    } else if (userName.isEmpty()) {
+      loginView.onRegister(200)
+    } else if (pass.isEmpty()) {
+      loginView.onRegister(201)
+    } else if (email.isEmpty()) {
+      loginView.onRegister(204)
     }
 
   }

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:background="@color/primaryBackground"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
 
     <include layout="@layout/toolbar"/>
 
@@ -13,12 +14,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <ListView
             android:id="@+id/list_view"
+            style="@style/Widget.AppCompat.ListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:divider="@color/secondaryBackground"
+            android:dividerHeight="1dp">
         </ListView>
     </android.support.v4.widget.SwipeRefreshLayout>
 

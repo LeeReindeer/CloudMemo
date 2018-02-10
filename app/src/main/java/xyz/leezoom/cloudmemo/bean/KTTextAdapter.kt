@@ -14,7 +14,7 @@
  *        limitations under the License.
  */
 
-package xyz.leezoom.androidcode.adapter
+package xyz.leezoom.cloudmemo.bean
 
 import android.content.Context
 import android.view.View
@@ -38,7 +38,7 @@ class KTTextAdapter(context: Context, list: ArrayList<String>) : ListViewAdapter
 
   override fun bindData(holder: TextViewHolder, data: String, position: Int) {
     if (data == AVUser.getCurrentUser().objectId) {
-      holder.text.text = AVUser.getCurrentUser().username
+      holder.text.text = String.format(context.getString(R.string.string_format1), AVUser.getCurrentUser().username)
     } else {
       holder.text.text = data
     }

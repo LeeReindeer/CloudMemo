@@ -1,12 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">平行笔记</string>
-    <string name="editor_hint">你好，陌生人</string>
+    <string name="editor_hint">你好，人类</string>
     <string name="username_hint">用户名</string>
     <string name="email_hint">邮箱</string>
     <string name="password_hint">密码</string>
     <string name="login_hint">登录</string>
     <string name="register_hint">注册</string>
-    <string name="toast_no_premission">你不是这条笔记的主人(</string>
+    <string name="toast_no_permission">你不是这条笔记的主人(</string>
     <string name="toast_empty_content">无法保存</string>
+    <string name="toast_register_success">注册成功，登录中</string>
+    <string name="menu_add_world">发现新世界</string>
+    <string name="menu_logout">登出</string>
+    <string name="menu_about">关于</string>
+    <string name="string_format1">%s (你的隐藏世界)</string>
+    <string name="pass_not_valid_error">密码必须为8～18个字符</string>
+    <string name="account_not_valid_error">用户名必须为3～18个字符</string>
+    <string name="email_not_valid_error">邮箱格式错误</string>
+    <string name="username_empty_error">用户名为空</string>
+    <string name="pass_empty_error">密码为空</string>
+    <string name="email_empty_error">邮箱为空</string>
+    <string name="username_taken_error">这个用户名已经被占用了</string>
+    <string name="email_taken_error">邮箱已被注册</string>
+    <string name="account_not_exit_error">帐号不存在</string>
+    <string name="account_pass_not_match">密码不正确</string>
+    <string name="toast_login_first">请先登录</string>
+    <string name="alert_add_world">发现新世界</string>
+    <string name="hint_try_input">试试 酷安小黑屋</string>
+    <string name="alert_select_world">选择世界</string>
+    <string name="about_title">关于</string>
+    <string name="about_version">版本</string>
+    <string name="about_license">许可证</string>
+    <string name="about_author">作者</string>
+    <string name="about_github">在 GitHub 上查看</string>
+    <string name="about_contact">其他</string>
+    <string name="about_telegram">电报</string>
+    <string name="about_rate">评一下分</string>
+    <string name="about_shar">分享到</string>
+    <string name="about_hwo_to">使用</string>
 </resources>

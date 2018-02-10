@@ -1,7 +1,6 @@
 package xyz.leezoom.cloudmemo.addmemo
 
 import xyz.leezoom.cloudmemo.bean.Memo
-import xyz.leezoom.cloudmemo.bean.MemoL
 
 interface EditAddPresenter {
 

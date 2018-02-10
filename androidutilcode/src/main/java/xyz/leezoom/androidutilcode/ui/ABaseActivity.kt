@@ -46,7 +46,7 @@ abstract class ABaseActivity : AppCompatActivity() {
     beforeCreate()
     super.onCreate(savedInstanceState)
     setContentView(layoutId)
-    if (toolbarId != -1) {
+    if (toolbarId != NOT_TOOLBAR) {
       toolbar = findViewById(toolbarId)
       setSupportActionBar(toolbar)
     }

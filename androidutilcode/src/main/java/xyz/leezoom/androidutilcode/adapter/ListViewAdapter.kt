@@ -22,11 +22,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-
-import java.util.ArrayList
+import java.util.*
 
 @Suppress("unused")
-abstract class ListViewAdapter<T, VH : ListViewAdapter.ListViewHolder>(private var context: Context, private var list: ArrayList<T>)
+abstract class ListViewAdapter<T, VH : ListViewAdapter.ListViewHolder>(protected var context: Context, protected var list: ArrayList<T>)
   : BaseAdapter() {
 
   @get:LayoutRes

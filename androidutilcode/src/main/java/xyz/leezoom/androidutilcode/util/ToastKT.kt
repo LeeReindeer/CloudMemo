@@ -18,9 +18,9 @@
 
 package xyz.leezoom.androidutilcode.util
 
-import android.support.v4.app.Fragment
 import android.content.Context
 import android.support.annotation.StringRes
+import android.support.v4.app.Fragment
 import android.widget.Toast
 
 fun Context.toast(message: CharSequence): Toast = Toast
@@ -31,9 +31,9 @@ fun Context.longToast(message: CharSequence): Toast = Toast
         .makeText(this, message, Toast.LENGTH_LONG)
         .apply { show() }
 
-fun Fragment.toast(message: CharSequence): Toast = this.activity.toast(message)
+fun Fragment.toast(message: CharSequence): Toast = this.activity!!.toast(message)
 
-fun Fragment.longToast(message: CharSequence): Toast = this.activity.longToast(message)
+fun Fragment.longToast(message: CharSequence): Toast = this.activity!!.longToast(message)
 
 fun Context.toast(@StringRes message: Int): Toast = Toast
         .makeText(this, message, Toast.LENGTH_SHORT)
@@ -43,6 +43,6 @@ fun Context.longToast(@StringRes message: Int): Toast = Toast
         .makeText(this, message, Toast.LENGTH_LONG)
         .apply { show() }
 
-fun Fragment.toast(@StringRes message: Int): Toast = this.activity.toast(message)
+fun Fragment.toast(@StringRes message: Int): Toast = this.activity!!.toast(message)
 
-fun Fragment.longToast(@StringRes message: Int): Toast = this.activity.longToast(message)
+fun Fragment.longToast(@StringRes message: Int): Toast = this.activity!!.longToast(message)

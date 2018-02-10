@@ -53,7 +53,6 @@ public class Memo extends AVObject {
     //memoL.setDescription(description);
   }
 
-  //TODO 可以浏览其他的公共 page， 默认 pageName 为 user 的 objectId
   public String getPage() {
     return getString("page");
   }
@@ -62,7 +61,6 @@ public class Memo extends AVObject {
     put("page", pageName);
   }
 
-  //TODO 锁住这个 memo，其他人在这个 page 可见但不可编辑
   public boolean isLocked() {
     return getBoolean("locked");
   }
@@ -71,7 +69,6 @@ public class Memo extends AVObject {
     put("locked", locked);
   }
 
-  //TODO 隐私的 memo，其他人不可见
   public boolean getVisibility() {
     return getBoolean("visibility");
   }
@@ -81,7 +78,7 @@ public class Memo extends AVObject {
   }
 
   public MemoL toLocal() {
-    return new MemoL(getString("title"), getString("description"), getInt("words"));
+    return new MemoL(getString("title"), getString("description"), getInt("words"), getUser(), getCreatedAt());
   }
 
   /*
