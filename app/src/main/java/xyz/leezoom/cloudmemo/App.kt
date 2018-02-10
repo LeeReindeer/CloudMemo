@@ -16,7 +16,7 @@ class App : Application() {
     super.onCreate()
     AVObject.registerSubclass(Memo::class.java)
     //TODO replace with your own appId and appKey
-    AVOSCloud.initialize(this, "KmNc4aXzpcpJFJ7VeCCyMPpu-gzGzoHsz", "RoeS2vn2Mm16cfsEKYJBmhxp")
+    AVOSCloud.initialize(this, "", "")
     AVOSCloud.setDebugLogEnabled(false)
     AVAnalytics.enableCrashReport(this, true)
     AVAnalytics.setSessionContinueMillis((60 * 1000).toLong())
