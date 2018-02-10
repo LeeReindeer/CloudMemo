@@ -113,8 +113,8 @@ class ListActivity : ABaseActivity(), ListView {
 
             setOnItemClickListener { parent, view, position, id ->
               defaultSharedPreferences.edit {
-                if (pageList[position] != App.getCurrentPage()) {
-                  App.setCurrentPage(pageList[position])
+                if (pageList[position] != App.currentPage) {
+                  App.currentPage = pageList[position]
                   putString(App.CURRENT_PAGE, pageList[position])
                   presenter!!.refresh(pageList[position])
                 }
@@ -128,7 +128,7 @@ class ListActivity : ABaseActivity(), ListView {
   private fun setToolbarTitle() {
     toolbar!!.title = when {
       AVUser.getCurrentUser() == null -> getString(R.string.app_name)
-      App.getCurrentPage() != AVUser.getCurrentUser().objectId -> App.getCurrentPage()
+      App.currentPage != AVUser.getCurrentUser().objectId -> App.currentPage
       else -> AVUser.getCurrentUser().username
     }
   }
@@ -145,9 +145,9 @@ class ListActivity : ABaseActivity(), ListView {
       presenter = ListPresenterImpl(this, this)
       memoAdapter = MemoAdapter(this, memoList)
       refresh_layout.isRefreshing = true
-      App.setCurrentPage(defaultSharedPreferences.getString(App.CURRENT_PAGE, AVUser.getCurrentUser().objectId))
-      LogUtil.d(TAG, "Init Current page: ${App.getCurrentPage()}")
-      presenter!!.loadAll(App.getCurrentPage())
+      App.currentPage = defaultSharedPreferences.getString(App.CURRENT_PAGE, AVUser.getCurrentUser().objectId)
+      LogUtil.d(TAG, "Init Current page: ${App.currentPage}")
+      presenter!!.loadAll(App.currentPage)
     }
   }
 
@@ -186,8 +186,8 @@ class ListActivity : ABaseActivity(), ListView {
       startActivityForResult(Intent(this@ListActivity, EditAddActivity::class.java), REFRESH_CODE)
     }
     refresh_layout.setOnRefreshListener {
-      LogUtil.d(TAG, "currentPage: ${App.getCurrentPage()}")
-      presenter!!.refresh(App.getCurrentPage())
+      LogUtil.d(TAG, "currentPage: ${App.currentPage}")
+      presenter!!.refresh(App.currentPage)
     }
 
   }
@@ -197,7 +197,7 @@ class ListActivity : ABaseActivity(), ListView {
       REFRESH_CODE -> {
         if (resultCode == Activity.RESULT_OK) {
           LogUtil.d(TAG, "onActivityResult: REFRESH")
-          presenter!!.refresh(App.getCurrentPage())
+          presenter!!.refresh(App.currentPage)
         }
       }
       else -> toast("Canceled")
@@ -252,7 +252,7 @@ class ListActivity : ABaseActivity(), ListView {
                 putStringSet(App.PAGES, pageSet)
                 putString(App.CURRENT_PAGE, page)
               }
-              App.setCurrentPage(page)
+              App.currentPage = page
               presenter!!.refresh(page)
             }
           }
