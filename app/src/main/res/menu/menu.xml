@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_spinner"
+        android:title="@string/menu_worlds"
+        app:actionViewClass="android.widget.Spinner"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/menu_world"
-        android:title="@string/menu_add_world">
+        android:title="@string/menu_add_world"></item>
 
+    <item
+        android:id="@+id/menu_sort"
+        android:title="@string/menu_change_item_order">
     </item>
 
     <item
         android:id="@+id/menu_out"
         android:title="@string/menu_logout">
     </item>
-
-    <item
-        android:id="@+id/menu_about"
-        android:title="@string/menu_about" />
 
 </menu>

@@ -24,6 +24,14 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <!--ActionMenuView theme-->
+    <style name="AppTheme.ToolbarPopupTheme">
+        <!-- 不设置这个属性，三个点会是黑色 -->
+        <item name="android:textColorSecondary">#ffffff</item>
+        <!-- 设置Menu窗口不覆盖Toolbar视图 -->
+        <item name="overlapAnchor">false</item>
+    </style>
+
     <!--About-->
     <style name="AppTheme.AllLightAbout" parent="Theme.Mal.Light">
         <!--

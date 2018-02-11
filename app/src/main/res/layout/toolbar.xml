@@ -10,7 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
+        app:titleTextColor="@color/whiteText"
         app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        <android.support.v7.widget.ActionMenuView
+            android:id="@+id/action_menu_view"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/AppTheme.ToolbarPopupTheme" />
+
     </android.support.v7.widget.Toolbar>
 
 </android.support.design.widget.AppBarLayout>

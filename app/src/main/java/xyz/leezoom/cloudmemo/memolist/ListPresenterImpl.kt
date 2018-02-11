@@ -2,8 +2,8 @@ package xyz.leezoom.cloudmemo.memolist
 
 import android.content.Context
 import com.avos.avoscloud.*
-import xyz.leezoom.cloudmemo.bean.Memo
 import xyz.leezoom.androidutilcode.util.LogUtil
+import xyz.leezoom.cloudmemo.bean.Memo
 
 class ListPresenterImpl (private val context: Context,
                          private val listView: ListView) : ListPresenter {
@@ -12,15 +12,21 @@ class ListPresenterImpl (private val context: Context,
 
   override fun init() {}
 
-  override fun refresh(page: String) {
+  override fun refresh(page: String, order: Boolean) {
     val query: AVQuery<Memo> = AVObject.getQuery(Memo::class.java)
     val query1: AVQuery<Memo> = AVQuery.getQuery(Memo::class.java)
     query.cachePolicy = AVQuery.CachePolicy.NETWORK_ELSE_CACHE
     query1.cachePolicy = AVQuery.CachePolicy.NETWORK_ELSE_CACHE
     query.maxCacheAge = 3600 * 1000 * 24 * 2
     query1.maxCacheAge = 3600 * 1000 * 24 * 2
-    query.orderByDescending("createdAt")
-    query1.orderByDescending("createdAt")
+    if (order) {
+      //older date is at last
+      query.orderByDescending("updatedAt")
+      query1.orderByDescending("updatedAt")
+    } else {
+      query.orderByAscending("updatedAt")
+      query1.orderByAscending("updatedAt")
+    }
 
     if (page == AVUser.getCurrentUser().objectId) {
       query.whereEqualTo("user", AVUser.getCurrentUser()).whereEqualTo("page", AVUser.getCurrentUser().objectId)
@@ -42,7 +48,13 @@ class ListPresenterImpl (private val context: Context,
       query1.whereEqualTo("page", page).whereEqualTo("user", AVUser.getCurrentUser())
       val orQuery = AVQuery.or(listOf(query, query1))
       orQuery.maxCacheAge = 3600 * 1000 * 24 * 2
-      orQuery.orderByDescending("createdAt")
+
+      if (order) {
+        orQuery.orderByDescending("updatedAt")
+      } else {
+        orQuery.orderByAscending("updatedAt")
+      }
+
       orQuery.findInBackground(object : FindCallback<Memo>(){
         override fun done(list: List<Memo>?, e: AVException?) {
           LogUtil.d(TAG, "Or Query: refresh")
@@ -60,15 +72,21 @@ class ListPresenterImpl (private val context: Context,
     }
   }
 
-  override fun loadAll(page: String) {
+  override fun loadAll(page: String, order: Boolean) {
     val query: AVQuery<Memo> = AVObject.getQuery(Memo::class.java)
     val query1: AVQuery<Memo> = AVQuery.getQuery(Memo::class.java)
     query.cachePolicy = AVQuery.CachePolicy.NETWORK_ELSE_CACHE
     query1.cachePolicy = AVQuery.CachePolicy.NETWORK_ELSE_CACHE
     query.maxCacheAge = 3600 * 1000 * 24 * 2
     query1.maxCacheAge = 3600 * 1000 * 24 * 2
-    query.orderByDescending("createdAt")
-    query1.orderByDescending("createdAt")
+    if (order) {
+      //older date is at last
+      query.orderByDescending("updatedAt")
+      query1.orderByDescending("updatedAt")
+    } else {
+      query.orderByAscending("updatedAt")
+      query1.orderByAscending("updatedAt")
+    }
 
     if (page == AVUser.getCurrentUser().objectId) {
       query.whereEqualTo("user", AVUser.getCurrentUser()).whereEqualTo("page", AVUser.getCurrentUser().objectId)
@@ -90,7 +108,13 @@ class ListPresenterImpl (private val context: Context,
       query1.whereEqualTo("page", page).whereEqualTo("user", AVUser.getCurrentUser())
       val orQuery = AVQuery.or(listOf(query, query1))
       orQuery.maxCacheAge = 3600 * 1000 * 24 * 2
-      orQuery.orderByDescending("createdAt")
+
+      if (order) {
+        orQuery.orderByDescending("updatedAt")
+      } else {
+        orQuery.orderByAscending("updatedAt")
+      }
+
       orQuery.findInBackground(object : FindCallback<Memo>(){
         override fun done(list: List<Memo>?, e: AVException?) {
           LogUtil.d(TAG, "Or Query: load")

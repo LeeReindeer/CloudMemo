@@ -5,13 +5,20 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
+import android.os.Bundle
+import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.util.Pair
+import android.support.v4.view.GravityCompat
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.ActionMenuView
+import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.EditText
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.content.edit
 import com.avos.avoscloud.AVAnalytics
@@ -19,8 +26,8 @@ import com.avos.avoscloud.AVUser
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.drawer_header_layout.view.*
 import org.jetbrains.anko.*
-import xyz.leezoom.androidutilcode.ui.ABaseActivity
 import xyz.leezoom.androidutilcode.util.LogUtil
 import xyz.leezoom.androidutilcode.util.toast
 import xyz.leezoom.cloudmemo.AboutActivity
@@ -33,16 +40,15 @@ import xyz.leezoom.cloudmemo.bean.MemoAdapter
 import xyz.leezoom.cloudmemo.login.LoginActivity
 
 
-class ListActivity : ABaseActivity(), ListView {
+class ListActivity : AppCompatActivity(), ListView, NavigationView.OnNavigationItemSelectedListener {
 
   private val TAG = "ListActivity"
 
-  override val layoutId: Int
-    get() = R.layout.activity_main
+  private lateinit var actionMenu: ActionMenuView
+  private lateinit var pageList: ArrayList<String>
+  private lateinit var spinner: Spinner
 
-  override val toolbarId: Int
-    get() = R.id.tool_bar
-
+  private var descendOrder = true
   private var memoAdapter: MemoAdapter? = null
   private var memoList: ArrayList<Memo> = ArrayList()
   private var presenter: ListPresenter? = null
@@ -54,7 +60,8 @@ class ListActivity : ABaseActivity(), ListView {
       memoList.addAll(list)
       memoAdapter!!.notifyDataSetChanged()
     }
-    setToolbarTitle()
+    //FIXME
+    //setToolbarTitle()
     refresh_layout.isRefreshing = false
   }
 
@@ -76,7 +83,8 @@ class ListActivity : ABaseActivity(), ListView {
       memoAdapter!!.notifyDataSetChanged()
     }
     refresh_layout.isRefreshing = false
-    setToolbarTitle()
+    //FIXME
+    //setToolbarTitle()
   }
 
   override fun onError(message: String?) {
@@ -84,6 +92,29 @@ class ListActivity : ABaseActivity(), ListView {
     if (!message.isNullOrBlank()) {
       toast("refresh error, $message")
     }
+  }
+
+  private fun setDrawer() {
+    if (supportActionBar != null) {
+      supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+      supportActionBar!!.setHomeAsUpIndicator(IconicsDrawable(this)
+              .icon(CommunityMaterial.Icon.cmd_menu)
+              .color(Color.WHITE)
+              .sizeDp(18))
+    }
+    nav_view.setNavigationItemSelectedListener(this)
+    val header = nav_view.getHeaderView(0)
+    header.nav_header_name.text = AVUser.getCurrentUser().username
+  }
+
+  private fun checkLogin(): Boolean = (AVUser.getCurrentUser() == null)
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
+    initToolbar()
+    initData()
+    initView()
   }
 
   @SuppressLint("MissingSuperCall")
@@ -98,44 +129,26 @@ class ListActivity : ABaseActivity(), ListView {
     AVAnalytics.onPause(this)
   }
 
-  private fun showPages() {
-      val pageList = defaultSharedPreferences.getStringSet(App.PAGES, emptySet()).toCollection(ArrayList())
-      LogUtil.d(TAG, "pageList: $pageList")
-      alert {
-        title = getString(R.string.alert_select_world)
-        customView {
-          listView {
-            this.layoutParams = ViewGroup.LayoutParams(this.measuredWidth, this.measuredHeight).apply {
-              setPadding(16, 8, 16, 16)
-            }
-            adapter = KTTextAdapter(this@ListActivity, pageList)
-            (adapter as KTTextAdapter).notifyDataSetChanged()
-
-            setOnItemClickListener { parent, view, position, id ->
-              defaultSharedPreferences.edit {
-                if (pageList[position] != App.currentPage) {
-                  App.currentPage = pageList[position]
-                  putString(App.CURRENT_PAGE, pageList[position])
-                  presenter!!.refresh(pageList[position])
-                }
-              }
-            }
-          }
-        }
-      }.show()
-  }
-
-  private fun setToolbarTitle() {
-    toolbar!!.title = when {
-      AVUser.getCurrentUser() == null -> getString(R.string.app_name)
-      App.currentPage != AVUser.getCurrentUser().objectId -> App.currentPage
-      else -> AVUser.getCurrentUser().username
+  override fun onBackPressed() {
+    if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+      drawer_layout.closeDrawer(GravityCompat.START)
+    } else {
+      super.onBackPressed()
     }
   }
 
-  private fun checkLogin(): Boolean = (AVUser.getCurrentUser() == null)
+  private fun initToolbar() {
+    val toolbar = findViewById<Toolbar>(R.id.tool_bar)
+    actionMenu = toolbar.findViewById(R.id.action_menu_view)
+    actionMenu.setOnMenuItemClickListener { menuItem ->
+      onOptionsItemSelected(menuItem)
+    }
+    setSupportActionBar(toolbar)
+    supportActionBar!!.title = null
+    supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+  }
 
-  override fun initData() {
+  private fun initData() {
     if (checkLogin()) {
       LogUtil.d(TAG, "Null user: ")
       toast(getString(R.string.toast_login_first))
@@ -145,17 +158,31 @@ class ListActivity : ABaseActivity(), ListView {
       presenter = ListPresenterImpl(this, this)
       memoAdapter = MemoAdapter(this, memoList)
       refresh_layout.isRefreshing = true
-      App.currentPage = defaultSharedPreferences.getString(App.CURRENT_PAGE, AVUser.getCurrentUser().objectId)
+      App.currentPage = defaultSharedPreferences.getString(App.CURRENT_PAGE, App.userId)
+      initPageList()
       LogUtil.d(TAG, "Init Current page: ${App.currentPage}")
-      presenter!!.loadAll(App.currentPage)
+      presenter!!.loadAll(App.currentPage, descendOrder)
     }
   }
 
-  override fun initView() {
-    setToolbarTitle()
-    toolbar!!.setOnClickListener {
-      showPages()
+  private fun initPageList() {
+    pageList = defaultSharedPreferences.getStringSet(App.PAGES, emptySet()).toCollection(ArrayList())
+    pageList.sort()
+    if (pageList.contains(App.userId)) {
+      val index = pageList.indexOf(App.userId)
+      pageList[index] = pageList[0]
+      pageList[0] = App.userId
     }
+  }
+
+  @SuppressLint("RestrictedApi")
+  private fun initView() {
+    //setToolbarTitle()
+    supportActionBar!!.title = null
+    //supportActionBar {
+    // showPages()
+    //}
+    setDrawer()
 
     list_view.adapter = memoAdapter
     list_view.setOnItemClickListener { parent, view, position, id ->
@@ -179,7 +206,7 @@ class ListActivity : ABaseActivity(), ListView {
       true
     }*/
     main_fb.setImageDrawable(IconicsDrawable(this)
-            .icon(CommunityMaterial.Icon.cmd_plus_one)
+            .icon(CommunityMaterial.Icon.cmd_pencil)
             .color(Color.WHITE)
             .sizeDp(24))
     main_fb.setOnClickListener {
@@ -187,7 +214,7 @@ class ListActivity : ABaseActivity(), ListView {
     }
     refresh_layout.setOnRefreshListener {
       LogUtil.d(TAG, "currentPage: ${App.currentPage}")
-      presenter!!.refresh(App.currentPage)
+      presenter!!.refresh(App.currentPage, descendOrder)
     }
 
   }
@@ -197,33 +224,71 @@ class ListActivity : ABaseActivity(), ListView {
       REFRESH_CODE -> {
         if (resultCode == Activity.RESULT_OK) {
           LogUtil.d(TAG, "onActivityResult: REFRESH")
-          presenter!!.refresh(App.currentPage)
+          presenter!!.refresh(App.currentPage, descendOrder)
         }
       }
       else -> toast("Canceled")
     }
   }
 
+  //Menu start
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-    menuInflater.inflate(R.menu.menu, menu)
+    menuInflater.inflate(R.menu.menu, actionMenu.menu)
+
+    val item = actionMenu.menu.findItem(R.id.menu_spinner)
+    spinner = item.actionView as Spinner
+    refreshMenuSpinner(App.currentPage)
     return true
+  }
+
+  private fun refreshMenuSpinner(page: String) {
+    initPageList()
+    val adapter = KTTextAdapter(this, pageList)
+    spinner.adapter = adapter
+    spinner.setPopupBackgroundResource(R.color.colorPrimary)
+    spinner.onItemSelectedListener = ItemSelectedListener()
+    //goto new add page
+    (0 until adapter.count)
+            .filter { spinner.getItemAtPosition(it).toString() == page }
+            .forEach { spinner.setSelection(it) }
+  }
+
+  inner class ItemSelectedListener : AdapterView.OnItemSelectedListener {
+    override fun onNothingSelected(parent: AdapterView<*>?) {}
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+      defaultSharedPreferences.edit {
+        if (pageList[position] != App.currentPage) {
+          App.currentPage = pageList[position]
+          putString(App.CURRENT_PAGE, pageList[position])
+          presenter!!.refresh(pageList[position], descendOrder)
+        }
+      }
+    }
   }
 
   override fun onOptionsItemSelected(item: MenuItem?): Boolean {
     when(item!!.itemId) {
-      R.id.menu_out -> {
-        AVUser.logOut()
-        defaultSharedPreferences.edit {
-          putString(App.CURRENT_PAGE, "")
-          putStringSet("page", emptySet())
-        }
-        startActivity(Intent(this, LoginActivity::class.java))
-        this.finish()
+
+      android.R.id.home -> {
+        drawer_layout.openDrawer(GravityCompat.START)
         return true
       }
 
-      R.id.menu_about -> {
-        startActivity<AboutActivity>()
+      R.id.menu_out -> {
+        alert(getString(R.string.alert_logout_confirm)) {
+          okButton {
+            AVUser.logOut()
+            App.userId = ""
+            defaultSharedPreferences.edit {
+              putString(App.CURRENT_PAGE, "")
+              putStringSet("page", emptySet())
+            }
+            startActivity<LoginActivity>()
+            this@ListActivity.finish()
+          }
+          cancelButton { }
+        }.show()
         return true
       }
 
@@ -253,7 +318,8 @@ class ListActivity : ABaseActivity(), ListView {
                 putString(App.CURRENT_PAGE, page)
               }
               App.currentPage = page
-              presenter!!.refresh(page)
+              refreshMenuSpinner(page)
+              presenter!!.refresh(page, descendOrder)
             }
           }
           cancelButton {  }
@@ -261,8 +327,27 @@ class ListActivity : ABaseActivity(), ListView {
         return true
       }
 
+      R.id.menu_sort -> {
+        descendOrder = !descendOrder
+        presenter!!.refresh(App.currentPage, descendOrder)
+        return true
+      }
+
       else -> return super.onOptionsItemSelected(item)
     }
   }
+  //Menu end
 
+  //Nav menu start
+  override fun onNavigationItemSelected(item: MenuItem): Boolean {
+    //TODO("not implemented")
+    when (item.itemId) {
+      R.id.nav_menu_about -> {
+        startActivity<AboutActivity>()
+        return true
+      }
+      else -> return false
+    }
+  }
+  //Nav menu end
 }

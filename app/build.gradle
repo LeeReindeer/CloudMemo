@@ -11,8 +11,8 @@ android {
         applicationId "xyz.leezoom.cloudmemo"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 4
-        versionName "0.$versionCode"
+        versionCode 5
+        versionName "0.$versionCode-beta"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

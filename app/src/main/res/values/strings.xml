@@ -11,16 +11,15 @@
     <string name="login_hint">Login</string>
     <string name="register_hint">Register</string>
 
+    <string name="toast_permisson_denied" translatable="false">Wow</string>
+    <string name="toast_login_first">Please login first!</string>
     <string name="toast_no_permission">You have no reason to do this!</string>
     <string name="toast_empty_content">Empty content, not saved!</string>
     <string name="toast_register_success">Register succeed!Login…</string>
 
-    <string name="menu_item_lock" translatable="false">Lock</string>
-    <string name="menu_item_visible" translatable="false">Visible</string>
-    <string name="menu_add_world">Add world</string>
-    <string name="menu_logout">Logout</string>
-    <string name="menu_about">About</string>
-
+    <string name="alert_select_world">Worlds</string>
+    <string name="alert_add_world">Add a world</string>
+    <string name="hint_try_input">Try input 酷安小黑屋</string>
 
     <string name="string_format1">%s (your hidden world)</string>
 
@@ -38,11 +37,10 @@
 
     <string name="account_not_exit_error">Account is not exit</string>
     <string name="account_pass_not_match">Username and password not match</string>
-    <string name="toast_permisson_denied" translatable="false">Wow</string>
-    <string name="toast_login_first">Please login first!</string>
-    <string name="alert_add_world">Add a world</string>
-    <string name="hint_try_input">Try input 酷安小黑屋</string>
-    <string name="alert_select_world">Worlds</string>
+
+    <!--error end-->
+
+    <!--about start-->
     <string name="about_title">About</string>
     <string name="about_version">Version</string>
     <string name="about_license">License</string>
@@ -53,6 +51,19 @@
     <string name="about_rate">Rate this app</string>
     <string name="about_shar">Share to</string>
     <string name="about_hwo_to">How to use</string>
+    <!--about end-->
 
-    <!--error end-->
+    <!--menu start-->
+    <string name="menu_item_lock" translatable="false">Lock</string>
+    <string name="menu_item_visible" translatable="false">Visible</string>
+    <string name="menu_add_world">Add world</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_about">About</string>
+
+    <string name="menu_night_mod">Night Mod</string>
+    <string name="menu_setting">Setting</string>
+    <string name="menu_worlds">Worlds</string>
+    <string name="menu_change_item_order">Change item order</string>
+    <string name="alert_logout_confirm">Are you sure to logout?</string>
+    <!--menu end-->
 </resources>
