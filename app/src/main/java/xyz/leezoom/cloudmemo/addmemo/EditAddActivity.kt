@@ -67,7 +67,12 @@ class EditAddActivity : ABaseActivity(), EditAddView {
   }
 
   override fun initView() {
-    supportActionBar!!.title = "Edit"
+    supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    supportActionBar!!.setHomeAsUpIndicator(IconicsDrawable(this)
+            .icon(CommunityMaterial.Icon.cmd_keyboard_backspace)
+            .color(Color.WHITE)
+            .sizeDp(18))
+
     ad_fb.setImageDrawable(IconicsDrawable(this)
             .icon(CommunityMaterial.Icon.cmd_send)
             .color(Color.WHITE)
@@ -172,6 +177,12 @@ class EditAddActivity : ABaseActivity(), EditAddView {
 
   override fun onOptionsItemSelected(item: MenuItem?): Boolean {
     when(item!!.itemId) {
+
+      android.R.id.home -> {
+        this.onBackPressed()
+        return true
+      }
+
       R.id.menu_editor_lock -> {
         if (memo != null) {
           if (memo!!.user.objectId != AVUser.getCurrentUser().objectId) {
