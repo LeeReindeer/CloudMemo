@@ -4,7 +4,7 @@
 <p>欢迎使用平行世界的笔记，在这里与其他世界的人类分享你的碎碎念吧。</p>
 </blockquote>
 
-## Intro
+## Introduction
 
 <p>食用说明书：</p>
 <ol>
@@ -23,3 +23,6 @@
 
 [![](http://ojvnx00zs.bkt.clouddn.com/coolapk.png)](https://www.coolapk.com/apk/176999)
 
+## Preview
+
+![](http://ojvnx00zs.bkt.clouddn.com/parallel_memo_resume.png)
